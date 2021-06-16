@@ -25,8 +25,10 @@ jobs:
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
-        set PATH=%PATH%;C:\Program Files\7-Zip\
-        7z e ipt.7z
+        $OLDPATH = [System.Environment]::GetEnvironmentVariable('PATH','machine')
+        $NEWPATH = "$OLDPATH;C:\Program Files\7-Zip\"
+        [Environment]::SetEnvironmentVariable("PATH", "$NEWPATH", "Machine")
+        7z e ipt.7z -p"ipts123"
     - name: Creating Tunnel.
       run: Start-Process Powershell -ArgumentList '-Noexit -Command ".\ngrok\ngrok.exe tcp 3389"'
     - name: Connecting to your RDP.
