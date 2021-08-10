@@ -40,9 +40,5 @@ jobs:
         echo "Do not close the Terminal in RDP!"
     - name: Remaining time
       run: | 
-        $i = 360
-        do { `
-            Write-Host $i `
-            Sleep 60 `
-            $i-- `
-        } while ($i -gt 0)
+        $timer = 360
+        do { ; Write-Host $timer ; Sleep 60 ; $timer-- ; } while ($timer -gt 0)
