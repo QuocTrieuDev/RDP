@@ -34,10 +34,10 @@ jobs:
         echo Success!
     - name: RDP is ready!
       run: |
-        tasklist | find /i "ngrok.exe" >Nul && curl -s localhost:4040/api/tunnels | jq -r .tunnels[0].public_url || echo "Failed to retreive NGROK authtoken - check again your authtoken"
-        echo Username: runneradmin
-        echo Password: TQT_2020
-        echo Do not close the Terminal in RDP!
+        $username = "runneradmin"
+        $password = "TQT_2020"
+        cmd /C "tasklist | find /i ""ngrok.exe"" >Nul && curl -s localhost:4040/api/tunnels | jq -r .tunnels[0].public_url && echo Username: $username && echo Password: $password || echo Failed to retreive NGROK authtoken - check again your authtoken"
+        echo "Do not close the Terminal in RDP!"
     - name: Remaining time
       run: | 
         $i = 360
