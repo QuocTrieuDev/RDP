@@ -1,0 +1,47 @@
+name: FreeRDP #02
+
+on: workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    timeout-minutes: 4320
+
+    steps:
+    - name: Downloading Ngrok & Extracting Ngrok Files.
+      run: |
+        Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+        Expand-Archive ngrok.zip
+    - name: Connecting to your Ngrok account.
+      run: .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
+      env:
+        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+    - name: Activating RDP access.
+      run: | 
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
+    - name: Creating Tunnel.
+      run: Start-Process Powershell -ArgumentList '-Noexit -Command ".\ngrok\ngrok.exe tcp 3389"'
+    - name: Connecting to your RDP.
+      run: |
+        net config server /srvcomment:"Windows Server 2019 By TQT" > out.txt 2>&1
+        net user runneradmin TQT_2020
+        sc config Audiosrv start= auto >nul
+        sc start audiosrv >nul
+        echo Success!
+    - name: RDP is ready!
+      run: |
+        tasklist | find /i "ngrok.exe" >Nul && curl -s localhost:4040/api/tunnels | jq -r .tunnels[0].public_url || echo "Failed to retreive NGROK authtoken - check again your authtoken"
+        echo Username: runneradmin
+        echo Password: TQT_2020
+        echo Do not close the Terminal in RDP!
+    - name: Remaining time
+      run: | 
+        $i = 360
+        do { `
+            Write-Host $i `
+            Sleep 60 `
+            $i-- `
+        } while ($i -gt 0)
