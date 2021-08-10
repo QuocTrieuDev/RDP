@@ -24,12 +24,13 @@ jobs:
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
     - name: Creating Tunnel.
       run: Start-Process Powershell -ArgumentList '-Noexit -Command ".\ngrok\ngrok.exe tcp 3389"'
-    - name: Connecting to your RDP.
+    - name: Basic Config to your RDP.
       run: |
         net config server /srvcomment:"Windows Server 2019 By TQT" > out.txt 2>&1
         net user runneradmin TQT_2020
-        sc config Audiosrv start= auto >nul
-        sc start audiosrv >nul
+        echo "Audio config"
+        cmd /C "sc config Audiosrv start= auto"
+        cmd /C "sc start audiosrv"
         echo Success!
     - name: RDP is ready!
       run: |
